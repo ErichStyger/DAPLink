@@ -25,8 +25,16 @@
 /* RL-ARM version number. */
 #define __RL_ARM_VER    471
 
-#define __task          __declspec(noreturn)
-#define __used          __attribute__((used))
+#ifdef __GNUC__
+  #define __packed /* \todo */
+  #define __task   /* \todo */
+  #define __used /* \todo */
+  #define __weak  /* \todo */
+  #define __forceinline /* \todo */
+#else
+  #define __task          __declspec(noreturn)
+  #define __used          __attribute__((used))
+#endif
 
 #ifndef NULL
  #ifdef __cplusplus
@@ -199,14 +207,23 @@ extern OS_ID     os_tmr_kill (OS_ID timer);
 /* System Functions */
 extern U32       os_suspend (void);
 extern void      os_resume (U32 sleep_time);
+#ifdef __GNUC__ /* << EST \todo */
+#else
 extern void      tsk_lock (void) __swi (5);
+#endif
 extern void      tsk_unlock (void);
 
 /* Fixed Memory Block Management Functions */
 extern int       _init_box (void *box_mem, U32 box_size, U32 blk_size);
+#ifdef __GNUC__ /* << EST \todo */
+#else
 extern void     *_alloc_box (void *box_mem) __swi (1);
+#endif
 extern void     *_calloc_box (void *box_mem);
+#ifdef __GNUC__ /* << EST \todo */
+#else
 extern int       _free_box (void *box_mem, void *box) __swi (2);
+#endif
 
 #else
 

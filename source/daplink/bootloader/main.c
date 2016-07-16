@@ -30,11 +30,20 @@
 #include "target_config.h"
 #include "util.h"
 
+#ifdef __GNUC__ /* << EST \todo */
+void modify_stack_pointer_and_start_app(uint32_t r0_sp, uint32_t r1_pc) {
+  __asm volatile (
+      "mov sp,r0   \n"
+      "bx r1       \n"
+      );
+}
+#else
 __asm void modify_stack_pointer_and_start_app(uint32_t r0_sp, uint32_t r1_pc)
 {
     MOV SP, R0
     BX R1
 }
+#endif
 
 // Event flags for main task
 // Timers events

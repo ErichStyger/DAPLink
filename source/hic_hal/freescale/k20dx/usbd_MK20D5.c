@@ -35,7 +35,11 @@ typedef struct __BUF_DESC {
     uint32_t   buf_addr;
 } BUF_DESC;
 
+#ifdef __GNUC__
+BUF_DESC  BD[(USBD_EP_NUM + 1) * 2 * 2] __attribute__ ((aligned (512)));
+#else
 BUF_DESC __align(512) BD[(USBD_EP_NUM + 1) * 2 * 2];
+#endif
 uint8_t EPBuf[(USBD_EP_NUM + 1) * 2 * 2][64];
 uint8_t OutEpSize[USBD_EP_NUM + 1];
 
@@ -143,7 +147,7 @@ void USBD_Init(void)
  *    Return Value:    None
  */
 
-void USBD_Connect(uint32_t con)
+void USBD_Connect(BOOL con) /* << EST fixed type */
 {
     if (con) {
         USB0->CTL  |= USB_CTL_USBENSOFEN_MASK;            /* enable USB           */
@@ -240,7 +244,7 @@ void USBD_WakeUp(void)
  *    Return Value:    None
  */
 
-void USBD_WakeUpCfg(uint32_t cfg)
+void USBD_WakeUpCfg(BOOL cfg)
 {
     /* Not needed                                                               */
 }
@@ -252,7 +256,7 @@ void USBD_WakeUpCfg(uint32_t cfg)
  *    Return Value:    None
  */
 
-void USBD_SetAddress(uint32_t  adr, uint32_t setup)
+void USBD_SetAddress(U32  adr, U32 setup)
 {
     if (!setup) {
         USB0->ADDR    = adr & 0x7F;
@@ -266,7 +270,7 @@ void USBD_SetAddress(uint32_t  adr, uint32_t setup)
  *    Return Value:    None
  */
 
-void USBD_Configure(uint32_t cfg)
+void USBD_Configure(BOOL cfg)
 {
 }
 
@@ -297,7 +301,7 @@ void USBD_ConfigEP(USB_ENDPOINT_DESCRIPTOR *pEPD)
  *    Return Value:    None
  */
 
-void USBD_DirCtrlEP(uint32_t dir)
+void USBD_DirCtrlEP(U32 dir)
 {
     /* Not needed                                                               */
 }
@@ -311,7 +315,7 @@ void USBD_DirCtrlEP(uint32_t dir)
  *    Return Value:    None
  */
 
-void USBD_EnableEP(uint32_t EPNum)
+void USBD_EnableEP(U32 EPNum)
 {
     if (EPNum & 0x80) {
         EPNum &= 0x0F;
@@ -332,7 +336,7 @@ void USBD_EnableEP(uint32_t EPNum)
  *    Return Value:    None
  */
 
-void USBD_DisableEP(uint32_t EPNum)
+void USBD_DisableEP(U32 EPNum)
 {
     if (EPNum & 0x80) {
         EPNum &= 0x0F;
@@ -353,7 +357,7 @@ void USBD_DisableEP(uint32_t EPNum)
  *    Return Value:    None
  */
 
-void USBD_ResetEP(uint32_t EPNum)
+void USBD_ResetEP(U32 EPNum)
 {
     if (EPNum & 0x80) {
         EPNum &= 0x0F;
@@ -377,7 +381,7 @@ void USBD_ResetEP(uint32_t EPNum)
  *    Return Value:    None
  */
 
-void USBD_SetStallEP(uint32_t EPNum)
+void USBD_SetStallEP(U32 EPNum)
 {
     EPNum &= 0x0F;
     USB0->ENDPOINT[EPNum].ENDPT |= USB_ENDPT_EPSTALL_MASK;
@@ -392,7 +396,7 @@ void USBD_SetStallEP(uint32_t EPNum)
  *    Return Value:    None
  */
 
-void USBD_ClrStallEP(uint32_t EPNum)
+void USBD_ClrStallEP(U32 EPNum)
 {
     USB0->ENDPOINT[EPNum & 0x0F].ENDPT &= ~USB_ENDPT_EPSTALL_MASK;
     USBD_ResetEP(EPNum);
@@ -407,7 +411,7 @@ void USBD_ClrStallEP(uint32_t EPNum)
  *    Return Value:    None
  */
 
-void USBD_ClearEPBuf(uint32_t EPNum)
+void USBD_ClearEPBuf(U32 EPNum)
 {
 }
 
@@ -421,7 +425,7 @@ void USBD_ClearEPBuf(uint32_t EPNum)
  *    Return Value:    Number of bytes read
  */
 
-uint32_t USBD_ReadEP(uint32_t EPNum, uint8_t *pData, uint32_t size)
+U32 USBD_ReadEP(U32 EPNum, U8 *pData, U32 size)
 {
     uint32_t n, sz, idx, setup = 0;
     idx = IDX(EPNum, RX, 0);
@@ -473,7 +477,7 @@ uint32_t USBD_ReadEP(uint32_t EPNum, uint8_t *pData, uint32_t size)
  *    Return Value:    Number of bytes written
  */
 
-uint32_t USBD_WriteEP(uint32_t EPNum, uint8_t *pData, uint32_t cnt)
+U32 USBD_WriteEP(U32 EPNum, U8 *pData, U32 cnt)
 {
     uint32_t idx, n;
     EPNum &= 0x0F;
@@ -500,7 +504,7 @@ uint32_t USBD_WriteEP(uint32_t EPNum, uint8_t *pData, uint32_t cnt)
  *    Return Value:    Frame Number
  */
 
-uint32_t USBD_GetFrame(void)
+U32 USBD_GetFrame(void)
 {
     return ((USB0->FRMNUML | (USB0->FRMNUMH << 8) & 0x07FF));
 }

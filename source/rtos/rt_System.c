@@ -50,6 +50,7 @@ static          U8  pend_flags;
  *      Global Functions
  *---------------------------------------------------------------------------*/
 
+#ifndef __GNUC__ /* << EST \todo */
 __asm void $$RTX$$version (void) {
    /* Export a version number symbol for a version control. */
 
@@ -57,7 +58,7 @@ __asm void $$RTX$$version (void) {
 
 __RL_RTX_VER    EQU     0x470
 }
-
+#endif
 
 /*--------------------------- rt_suspend ------------------------------------*/
 

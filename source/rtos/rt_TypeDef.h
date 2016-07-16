@@ -19,6 +19,10 @@
  * limitations under the License.
  */
 
+#ifdef __GNUC__ /* << EST */
+  #define __weak /* \todo */
+#endif
+
 /* Types */
 typedef char               S8;
 typedef unsigned char      U8;

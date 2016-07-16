@@ -2218,13 +2218,22 @@ const U8 USBD_OtherSpeedConfigDescriptor_HS[] = {
 #endif
 
 /* USB Device Create String Descriptor */
+#ifdef __GNUC__ /* << EST \todo check wchar_t */
+#include "wchar.h"
+#define USBD_STR_DEF(n)                 \
+  struct {                              \
+    U8  len;                            \
+    U8  type;                           \
+    wchar_t str[sizeof(USBD_##n)/2-1];      \
+  } desc##n
+#else
 #define USBD_STR_DEF(n)                 \
   struct {                              \
     U8  len;                            \
     U8  type;                           \
     U16 str[sizeof(USBD_##n)/2-1];      \
   } desc##n
-
+#endif
 #define USBD_STR_VAL(n)                  \
  { sizeof(USBD_##n), USB_STRING_DESCRIPTOR_TYPE, USBD_##n }
 
